@@ -70,6 +70,9 @@ class MainActivity : ComponentActivity() {
         window.statusBarColor = android.graphics.Color.rgb(3, 10, 28)
         window.navigationBarColor = android.graphics.Color.rgb(3, 10, 28)
 
+        // Guardar el contexto de la actividad antes de entrar en AnimatedContent.
+        val activityContext = this
+
         setContent {
             var showSplash by remember { mutableStateOf(true) }
 
@@ -101,7 +104,7 @@ class MainActivity : ComponentActivity() {
                 if (mostrarBienvenida) {
                     StartupScreen()
                 } else {
-                    RegistroApp(this)
+                    RegistroApp(activityContext)
                 }
             }
         }
