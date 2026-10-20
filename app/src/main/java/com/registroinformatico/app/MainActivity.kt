@@ -1,5 +1,12 @@
 package com.registroinformatico.app
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.togetherWith
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.AnimatedContent
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.content.Context
 import androidx.activity.ComponentActivity
@@ -55,15 +62,48 @@ private val Muted = Color(0xFF9BAFC7)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Fondo oscuro desde la creación de la ventana, antes de dibujar Compose.
+        window.setBackgroundDrawable(
+            ColorDrawable(android.graphics.Color.rgb(2, 8, 23))
+        )
         window.statusBarColor = android.graphics.Color.rgb(3, 10, 28)
         window.navigationBarColor = android.graphics.Color.rgb(3, 10, 28)
+
         setContent {
             var showSplash by remember { mutableStateOf(true) }
+
             LaunchedEffect(Unit) {
                 delay(1900)
                 showSplash = false
             }
-            if (showSplash) StartupScreen() else RegistroApp(this)
+
+            AnimatedContent(
+                targetState = showSplash,
+                transitionSpec = {
+                    if (targetState) {
+                        fadeIn(animationSpec = tween(250)) togetherWith
+                            fadeOut(animationSpec = tween(150))
+                    } else {
+                        (
+                            fadeIn(animationSpec = tween(450)) +
+                                slideInVertically(
+                                    animationSpec = tween(450),
+                                    initialOffsetY = { height -> height / 35 }
+                                )
+                            ) togetherWith fadeOut(
+                                animationSpec = tween(300)
+                            )
+                    }
+                },
+                label = "transicion_bienvenida_inicio"
+            ) { mostrarBienvenida ->
+                if (mostrarBienvenida) {
+                    StartupScreen()
+                } else {
+                    RegistroApp(this)
+                }
+            }
         }
     }
 }
